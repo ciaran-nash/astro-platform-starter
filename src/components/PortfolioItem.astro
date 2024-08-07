@@ -1,0 +1,43 @@
+---
+// src/components/PortfolioItem.astro
+import { PortableText } from '@portabletext/react';
+import client, { urlFor } from '../lib/sanityClient';
+import type { SanityPost } from '../sanity'; // Adjust the path as necessary
+
+// Fetch your data using the client
+const post = await client.fetch<SanityPost>(`
+  *[_type == "post"][0]{
+    _id,
+    title,
+    description,
+    image,
+    exhibitionDetails,
+    credits
+  }
+`);
+
+const { title, image, description, exhibitionDetails, credits } = post;
+---
+
+<article class="portfolio-item">
+    <h1>{title}</h1>
+    {image && <img src={urlFor(image).url()} alt={title} />}
+    <p>{description}</p>
+    <section>
+        <h2>Exhibition Details</h2>
+        <p><strong>Dates:</strong> {exhibitionDetails.dates}</p>
+        <p><strong>Days:</strong> {exhibitionDetails.days}</p>
+        <p><strong>Location:</strong> {exhibitionDetails.location}</p>
+        <p><strong>Access Information:</strong> <a href={exhibitionDetails.accessInfo}>Link</a></p>
+    </section>
+    <section>
+        <h2>Credits</h2>
+        <PortableText value={credits} />
+    </section>
+</article>
+
+<style>
+    .portfolio-item {
+        /* Add your styles here */
+    }
+</style>
